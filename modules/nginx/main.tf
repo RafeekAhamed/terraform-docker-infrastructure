@@ -2,13 +2,13 @@ resource "docker_image" "this" {
   name = "terraform-nginx:latest"
 
   build {
-    context    = "${path.root}/nginx"
+    context    = "${path.module}/../../nginx"
     dockerfile = "Dockerfile"
   }
 }
 
 resource "docker_container" "this" {
-  name  = "terraform-nginx"
+  name  = var.container_name
   image = docker_image.this.image_id
 
   networks_advanced {
@@ -17,6 +17,6 @@ resource "docker_container" "this" {
 
   ports {
     internal = 80
-    external = 8080
+    external = var.host_port
   }
 }

@@ -23,3 +23,13 @@ variable "network_name" {
   description = "Docker network name"
   type        = string
 }
+
+variable "container_name" {
+  description = "Backend container name"
+  type        = string
+}
+
+variable "host_port" {
+  description = "Backend host port"
+  type        = number
+}

@@ -2,13 +2,13 @@ resource "docker_image" "this" {
   name = "terraform-backend:latest"
 
   build {
-    context    = "${path.root}/backend"
+    context    = "${path.module}/../../backend"
     dockerfile = "Dockerfile"
   }
 }
 
 resource "docker_container" "this" {
-  name  = "terraform-backend"
+  name  = var.container_name
   image = docker_image.this.image_id
 
   env = [
@@ -19,11 +19,12 @@ resource "docker_container" "this" {
   ]
 
   networks_advanced {
-    name = var.network_name
-  }
+  name    = var.network_name
+  aliases = ["terraform-backend"]
+}
 
   ports {
     internal = 5000
-    external = 5000
+    external = var.host_port
   }
 }

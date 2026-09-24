@@ -1,6 +1,6 @@
 output "application_url" {
   description = "Application URL through Nginx"
-  value       = "http://localhost:8080"
+  value       = "http://localhost:${var.host_port}"
 }
 
 output "container_name" {

@@ -3,7 +3,7 @@ resource "docker_image" "this" {
 }
 
 resource "docker_container" "this" {
-  name  = "terraform-postgres"
+  name  = var.container_name
   image = docker_image.this.image_id
 
   env = [

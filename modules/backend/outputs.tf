@@ -5,5 +5,5 @@ output "container_name" {
 
 output "url" {
   description = "Backend API URL"
-  value       = "http://localhost:5000"
+  value       = "http://localhost:${var.host_port}"
 }
