@@ -9,6 +9,9 @@ crash.*.log
 .terraform.lock.hcl
 terraform.tfstate
 
+# Example configuration is safe to commit
+!terraform.tfvars.example
+
 # Terraform lock file should be committed
 !.terraform.lock.hcl
 

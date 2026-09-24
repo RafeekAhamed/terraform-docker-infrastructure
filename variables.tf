@@ -14,5 +14,4 @@ variable "postgres_password" {
   description = "PostgreSQL application password"
   type        = string
   sensitive   = true
-  default     = "app_password"
 }
