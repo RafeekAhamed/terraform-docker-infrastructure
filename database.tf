@@ -1,18 +1,8 @@
-resource "docker_image" "postgres" {
-  name = "postgres:16-alpine"
-}
+module "database" {
+  source = "./modules/database"
 
-resource "docker_container" "postgres" {
-  name  = "terraform-postgres"
-  image = docker_image.postgres.image_id
-
-  env = [
-    "POSTGRES_DB=${var.postgres_db}",
-    "POSTGRES_USER=${var.postgres_user}",
-    "POSTGRES_PASSWORD=${var.postgres_password}"
-  ]
-
-  networks_advanced {
-    name = docker_network.app_network.name
-  }
+  postgres_db       = var.postgres_db
+  postgres_user     = var.postgres_user
+  postgres_password = var.postgres_password
+  network_name      = module.network.network_name
 }

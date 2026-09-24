@@ -1,29 +1,9 @@
-resource "docker_image" "backend" {
-  name = "terraform-backend:latest"
+module "backend" {
+  source = "./modules/backend"
 
-  build {
-    context    = "${path.module}/backend"
-    dockerfile = "Dockerfile"
-  }
-}
-
-resource "docker_container" "backend" {
-  name  = "terraform-backend"
-  image = docker_image.backend.image_id
-
-  env = [
-    "DB_HOST=terraform-postgres",
-    "DB_NAME=${var.postgres_db}",
-    "DB_USER=${var.postgres_user}",
-    "DB_PASSWORD=${var.postgres_password}"
-  ]
-
-  networks_advanced {
-    name = docker_network.app_network.name
-  }
-
-  ports {
-    internal = 5000
-    external = 5000
-  }
+  db_host      = module.database.container_name
+  db_name      = var.postgres_db
+  db_user      = var.postgres_user
+  db_password  = var.postgres_password
+  network_name = module.network.network_name
 }

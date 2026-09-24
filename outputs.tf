@@ -1,19 +1,19 @@
 output "application_url" {
   description = "Application URL through Nginx"
-  value       = "http://localhost:8080"
+  value       = module.nginx.application_url
 }
 
 output "backend_url" {
   description = "Backend API URL"
-  value       = "http://localhost:5000"
+  value       = module.backend.url
 }
 
 output "postgres_container" {
   description = "PostgreSQL container name"
-  value       = docker_container.postgres.name
+  value       = module.database.container_name
 }
 
 output "docker_network" {
   description = "Docker network used by the application"
-  value       = docker_network.app_network.name
+  value       = module.network.network_name
 }

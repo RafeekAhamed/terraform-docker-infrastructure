@@ -1,3 +1,5 @@
-resource "docker_network" "app_network" {
-  name = "terraform-app-network"
+module "network" {
+  source = "./modules/network"
+
+  network_name = "terraform-app-network"
 }
