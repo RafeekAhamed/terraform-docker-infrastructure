@@ -19,9 +19,9 @@ resource "docker_container" "this" {
   ]
 
   networks_advanced {
-  name    = var.network_name
-  aliases = ["terraform-backend"]
-}
+    name    = var.network_name
+    aliases = ["terraform-backend"]
+  }
 
   ports {
     internal = 5000
