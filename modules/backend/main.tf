@@ -15,7 +15,7 @@ resource "docker_container" "this" {
     "DB_HOST=${var.db_host}",
     "DB_NAME=${var.db_name}",
     "DB_USER=${var.db_user}",
-    "DB_PASSWORD=${var.db_password}"
+    "DB_PASSWORD=${var.db_password}",
   ]
 
   networks_advanced {
