@@ -25,6 +25,10 @@ jobs:
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
 
+      # -------------------------
+      # DEV
+      # -------------------------
+
       - name: Terraform Init - Dev
         working-directory: environments/dev
         run: terraform init -backend=false
@@ -33,6 +37,14 @@ jobs:
         working-directory: environments/dev
         run: terraform validate
 
+      - name: Terraform Plan - Dev
+        working-directory: environments/dev
+        run: terraform plan -out=tfplan
+
+      # -------------------------
+      # PROD
+      # -------------------------
+
       - name: Terraform Init - Prod
         working-directory: environments/prod
         run: terraform init -backend=false
@@ -40,3 +52,7 @@ jobs:
       - name: Terraform Validate - Prod
         working-directory: environments/prod
         run: terraform validate
+
+      - name: Terraform Plan - Prod
+        working-directory: environments/prod
+        run: terraform plan -out=tfplan
