@@ -1,353 +1,189 @@
-\# Architecture
+# Architecture
 
-
-
-\## High-Level Architecture
-
-
+## High-Level Architecture
 
 ```text
+                         Git / GitHub
+                              |
+                              v
+                    +-------------------+
+                    |    Terraform CI   |
+                    |   GitHub Actions   |
+                    +---------+---------+
+                              |
+                              v
+                    +-------------------+
+                    |      Terraform    |
+                    |  Reusable Modules |
+                    +---------+---------+
+                              |
+              +---------------+---------------+
+              |                               |
+              v                               v
+       +-------------+                 +-------------+
+       |     DEV     |                 |    PROD     |
+       | Environment |                 | Environment |
+       +------+------+                 +------+------+
+              |                               |
+              v                               v
+   +---------------------+          +---------------------+
+   | terraform-dev-      |          | terraform-prod-     |
+   | network             |          | network             |
+   +----------+----------+          +----------+----------+
+              |                               |
+       +------+------+                  +------+------+
+       |      |      |                  |      |      |
+       v      v      v                  v      v      v
+    Nginx  Backend PostgreSQL        Nginx  Backend PostgreSQL
+    :8081   :5001     :5432          :8082   :5002     :5432
 
-&#x20;                        Git / GitHub
+                         Docker Networking
+```
 
-&#x20;                             |
-
-&#x20;                             v
-
-&#x20;                   +-------------------+
-
-&#x20;                   |    Terraform CI   |
-
-&#x20;                   |   GitHub Actions   |
-
-&#x20;                   +---------+---------+
-
-&#x20;                             |
-
-&#x20;                             v
-
-&#x20;                   +-------------------+
-
-&#x20;                   |      Terraform    |
-
-&#x20;                   |  Reusable Modules |
-
-&#x20;                   +---------+---------+
-
-&#x20;                             |
-
-&#x20;             +---------------+---------------+
-
-&#x20;             |                               |
-
-&#x20;             v                               v
-
-&#x20;      +-------------+                 +-------------+
-
-&#x20;      |     DEV     |                 |    PROD     |
-
-&#x20;      | Environment |                 | Environment |
-
-&#x20;      +------+------+                 +------+------+
-
-&#x20;             |                               |
-
-&#x20;             v                               v
-
-&#x20;  +---------------------+          +---------------------+
-
-&#x20;  | terraform-dev-     |          | terraform-prod-    |
-
-&#x20;  | network             |          | network             |
-
-&#x20;  +----------+----------+          +----------+----------+
-
-&#x20;             |                               |
-
-&#x20;      +------+------+                  +------+------+
-
-&#x20;      |      |      |                  |      |      |
-
-&#x20;      v      v      v                  v      v      v
-
-&#x20;   Nginx  Backend  PostgreSQL       Nginx  Backend  PostgreSQL
-
-&#x20;   :8081   :5001     :5432          :8082   :5002     :5432
-
-&#x20;      |      |      |                  |      |      |
-
-&#x20;      +------+------+\\                +------+------+
-
-&#x20;             |       \\                       |
-
-&#x20;             +--------+-----------------------+
-
-&#x20;                      |
-
-&#x20;               Docker Networking
-
-
-
-
-
-Module Design
-
-
+## Module Design
 
 The Terraform configuration is divided into reusable modules:
 
-
+```text
 modules/
-
-├── network
-
+├── network/
 │   └── Creates Docker bridge network
-
 │
-
-├── database
-
+├── database/
 │   └── Creates PostgreSQL container
-
 │
-
-├── backend
-
+├── backend/
 │   └── Builds and runs Flask application
-
 │
+└── nginx/
+    └── Builds and runs Nginx reverse proxy
+```
 
-└── nginx
+## Development Environment
 
-&#x20;   └── Builds and runs Nginx reverse proxy
-
-
-
-**Development Environment**
-
+```text
 Browser
-
-&#x20;  |
-
-&#x20;  | http://localhost:8081
-
-&#x20;  v
-
+   |
+   | http://localhost:8081
+   v
 Nginx
-
 terraform-dev-nginx
-
-&#x20;  |
-
-&#x20;  | Docker network
-
-&#x20;  v
-
+   |
+   | Docker network
+   v
 Backend
-
 terraform-dev-backend
-
-&#x20;  |
-
-&#x20;  | PostgreSQL connection
-
-&#x20;  v
-
+   |
+   | PostgreSQL connection
+   v
 Database
-
 terraform-dev-postgres
+```
 
-**Production Environment**
+## Production Environment
 
-
-
+```text
 Browser
-
-&#x20;  |
-
-&#x20;  | http://localhost:8082
-
-&#x20;  v
-
+   |
+   | http://localhost:8082
+   v
 Nginx
-
 terraform-prod-nginx
-
-&#x20;  |
-
-&#x20;  | Docker network
-
-&#x20;  v
-
+   |
+   | Docker network
+   v
 Backend
-
 terraform-prod-backend
-
-&#x20;  |
-
-&#x20;  | PostgreSQL connection
-
-&#x20;  v
-
+   |
+   | PostgreSQL connection
+   v
 Database
-
 terraform-prod-postgres
+```
 
-Network Isolation
-
-
+## Network Isolation
 
 Development and production use separate Docker networks:
 
+```text
 terraform-dev-network
+       |
+       +-- terraform-dev-nginx
+       +-- terraform-dev-backend
+       +-- terraform-dev-postgres
+```
 
-&#x20;       |
-
-&#x20;       +-- terraform-dev-nginx
-
-&#x20;       +-- terraform-dev-backend
-
-&#x20;       +-- terraform-dev-postgres
-
-
-
-
-
+```text
 terraform-prod-network
+       |
+       +-- terraform-prod-nginx
+       +-- terraform-prod-backend
+       +-- terraform-prod-postgres
+```
 
-&#x20;       |
+This provides environment-level network isolation between Development and Production.
 
-&#x20;       +-- terraform-prod-nginx
+## Request Flow
 
-&#x20;       +-- terraform-prod-backend
+A request to the Development application follows:
 
-&#x20;       +-- terraform-prod-postgres
-
-Request Flow
-
-
-
-A request to the development application follows:
-
+```text
 Client
-
-&#x20; |
-
-&#x20; v
-
+  |
+  v
 localhost:8081
-
-&#x20; |
-
-&#x20; v
-
+  |
+  v
 Nginx :80
-
-&#x20; |
-
-&#x20; v
-
+  |
+  v
 Backend :5000
-
-&#x20; |
-
-&#x20; v
-
+  |
+  v
 PostgreSQL :5432
+```
 
-Infrastructure Lifecycle
+The Production request flow is equivalent, using `localhost:8082` for the Nginx entry point.
 
+## Infrastructure Lifecycle
+
+```text
 Terraform Configuration
-
-&#x20;       |
-
-&#x20;       v
-
+        |
+        v
 terraform init
-
-&#x20;       |
-
-&#x20;       v
-
+        |
+        v
 terraform validate
-
-&#x20;       |
-
-&#x20;       v
-
+        |
+        v
 terraform plan
-
-&#x20;       |
-
-&#x20;       v
-
+        |
+        v
 terraform apply
-
-&#x20;       |
-
-&#x20;       v
-
+        |
+        v
 Docker Infrastructure
+```
 
+## CI Validation
 
+GitHub Actions validates the Terraform configuration on repository changes.
 
-CI Validation
-
-
-
-GitHub Actions validates the Terraform configuration on repository changes:
-
-
-
+```text
 Git Push / Pull Request
+          |
+          v
+     GitHub Actions
+          |
+          +--> terraform fmt -check
+          |
+          +--> terraform init
+          |
+          +--> terraform validate
+          |
+          v
+       CI Result
+```
 
-&#x20;         |
-
-&#x20;         v
-
-&#x20;    GitHub Actions
-
-&#x20;         |
-
-&#x20;         +--> terraform fmt -check
-
-&#x20;         |
-
-&#x20;         +--> terraform init
-
-&#x20;         |
-
-&#x20;         +--> terraform validate
-
-&#x20;         |
-
-&#x20;         v
-
-&#x20;      CI Result
-
-
-
-
-
-Save it.
-
-
-
-\---
-
-
-
-\## 3. Check everything before committing
-
-
-
-Run:
-
-
-
-```powershell
-
-git status --short
-
-
-
+The CI workflow is intended to catch Terraform formatting and configuration validation issues before infrastructure changes are merged.
