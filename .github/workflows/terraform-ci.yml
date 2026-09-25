@@ -39,7 +39,9 @@ jobs:
 
       - name: Terraform Plan - Dev
         working-directory: environments/dev
-        run: terraform plan -out=tfplan
+        env:
+        TF_VAR_postgres_password: ${{ secrets.POSTGRES_PASSWORD }}
+        run: terraform plan -out=tfplan -input=false
 
       # -------------------------
       # PROD
@@ -55,4 +57,6 @@ jobs:
 
       - name: Terraform Plan - Prod
         working-directory: environments/prod
-        run: terraform plan -out=tfplan
+        env:
+        TF_VAR_postgres_password: ${{ secrets.POSTGRES_PASSWORD }}
+        run: terraform plan -out=tfplan -input=false
