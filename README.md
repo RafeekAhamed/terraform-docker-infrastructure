@@ -203,6 +203,7 @@ terraform-docker-infrastructure/
 │       ├── terraform-prod-plan.png
 │       ├── docker-containers.png
 │       ├── application-testing.png
+│       │── github-repository.png
 │       └── github-actions-ci.png
 │
 ├── environments/
