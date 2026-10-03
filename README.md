@@ -1,471 +1,1408 @@
-# Terraform Docker Infrastructure
+\# 🚀 Terraform + Docker Infrastructure Automation
 
-Production-style **Infrastructure as Code (IaC)** project using **Terraform and Docker** to provision isolated Development and Production environments with reusable Terraform modules.
 
-The project demonstrates environment separation, Docker networking, containerized application deployment, reverse proxy configuration, database connectivity, and Terraform-based infrastructure management.
 
----
+A hands-on \*\*Infrastructure as Code (IaC)\*\* project using \*\*Terraform and Docker\*\* to provision, manage, and validate a multi-container application stack across isolated \*\*Development\*\* and \*\*Production\*\* environments.
 
-## 🚀 Project Overview
 
-This project provisions a multi-container application infrastructure locally using Terraform and Docker.
+
+The project demonstrates practical DevOps capabilities including \*\*Terraform modules, Docker networking, container provisioning, environment separation, Nginx reverse proxy configuration, Flask, PostgreSQL, Git, and GitHub Actions CI\*\*.
+
+
+
+\---
+
+
+
+\## 📌 Project Overview
+
+
+
+This project uses Terraform to provision a complete application stack locally with Docker.
+
+
 
 Each environment contains:
 
-* Nginx reverse proxy
-* Python / Flask backend
-* PostgreSQL database
-* Dedicated Docker network
-* Environment-specific host port mappings
 
-Dev and Prod environments are completely separated at the Docker network level.
 
-### Key Features
+\* Nginx reverse proxy
 
-* Infrastructure as Code using Terraform
-* Reusable Terraform modules
-* Separate Dev and Prod environments
-* Docker network isolation
-* Flask backend application
-* PostgreSQL database
-* Nginx reverse proxy
-* Environment-specific configuration
-* Terraform validation and planning
-* Git-based infrastructure version control
-* Local infrastructure with zero cloud infrastructure cost
+\* Flask backend API
 
----
+\* PostgreSQL database
 
-## 🏗️ Architecture
+\* Dedicated Docker network
+
+\* Terraform-managed containers
+
+\* Environment-specific configuration
+
+
+
+\### Key Features
+
+
+
+\* Infrastructure as Code using Terraform
+
+\* Reusable Terraform modules
+
+\* Dev / Prod environment separation
+
+\* Isolated Docker networks
+
+\* Automated Docker image builds
+
+\* Docker container provisioning through Terraform
+
+\* Flask REST API
+
+\* PostgreSQL database
+
+\* Nginx reverse proxy
+
+\* Sensitive variable handling
+
+\* Terraform outputs
+
+\* Terraform state management
+
+\* GitHub Actions CI validation
+
+\* Infrastructure plan verification
+
+\* Local deployment without cloud infrastructure costs
+
+
+
+\---
+
+
+
+\# 🏗️ Architecture
+
+
 
 ```text
-                         Terraform
-                             │
-                             ▼
-                  Infrastructure as Code
-                             │
-              ┌──────────────┴──────────────┐
-              │                             │
-              ▼                             ▼
-       Development                    Production
-       Environment                    Environment
-              │                             │
-              ▼                             ▼
-  terraform-dev-network        terraform-prod-network
-              │                             │
-       ┌──────┼──────┐               ┌──────┼──────┐
-       │      │      │               │      │      │
-       ▼      ▼      ▼               ▼      ▼      ▼
-     Nginx  Backend  PostgreSQL     Nginx  Backend  PostgreSQL
-     :8081  :5001    :5432         :8082  :5002    :5432
+
+&#x20;                        ┌──────────────────────┐
+
+&#x20;                        │   GitHub Repository   │
+
+&#x20;                        └──────────┬───────────┘
+
+&#x20;                                   │
+
+&#x20;                                   ▼
+
+&#x20;                        ┌──────────────────────┐
+
+&#x20;                        │   GitHub Actions CI  │
+
+&#x20;                        └──────────┬───────────┘
+
+&#x20;                                   │
+
+&#x20;                                   ▼
+
+&#x20;                        ┌──────────────────────┐
+
+&#x20;                        │    Terraform IaC     │
+
+&#x20;                        └──────────┬───────────┘
+
+&#x20;                                   │
+
+&#x20;                   ┌───────────────┴───────────────┐
+
+&#x20;                   │                               │
+
+&#x20;                   ▼                               ▼
+
+&#x20;          ┌─────────────────┐             ┌─────────────────┐
+
+&#x20;          │       DEV       │             │      PROD       │
+
+&#x20;          │  Docker Network │             │  Docker Network │
+
+&#x20;          └────────┬────────┘             └────────┬────────┘
+
+&#x20;                   │                               │
+
+&#x20;             ┌─────┼─────┐                   ┌─────┼─────┐
+
+&#x20;             ▼     ▼     ▼                   ▼     ▼     ▼
+
+&#x20;           Nginx Flask PostgreSQL          Nginx Flask PostgreSQL
+
+&#x20;            :8081 :5001                    :8082 :5002
+
 ```
 
-### Request Flow
+
+
+\### Application Flow
+
+
 
 ```text
+
 Client
-  │
-  ▼
-Nginx
-  │
-  ▼
-Flask Backend
-  │
-  ▼
-PostgreSQL
+
+&#x20; │
+
+&#x20; ▼
+
+Nginx Reverse Proxy
+
+&#x20; │
+
+&#x20; ▼
+
+Flask Backend API
+
+&#x20; │
+
+&#x20; ▼
+
+PostgreSQL Database
+
 ```
 
-Nginx acts as the reverse proxy and forwards application requests to the Flask backend.
 
-The backend communicates with PostgreSQL internally through the environment-specific Docker network.
 
----
+\---
 
-## 🔀 Environment Isolation
 
-Development and Production use separate Docker bridge networks.
 
-### Development
+\# 🔀 Environment Separation
+
+
+
+Development and Production use separate Docker networks.
+
+
+
+\## 🔵 Development
+
+
 
 ```text
+
 Network: terraform-dev-network
-Subnet:  172.20.0.0/16
+
+
 
 Nginx      → localhost:8081
+
 Backend    → localhost:5001
-PostgreSQL → Internal only
+
+PostgreSQL → Internal Docker network
+
 ```
 
-### Production
+
+
+\## 🟢 Production
+
+
 
 ```text
+
 Network: terraform-prod-network
-Subnet:  172.21.0.0/16
+
+
 
 Nginx      → localhost:8082
+
 Backend    → localhost:5002
-PostgreSQL → Internal only
+
+PostgreSQL → Internal Docker network
+
 ```
 
-The separate Docker networks provide environment-level network isolation and prevent accidental direct communication between Dev and Prod containers.
 
----
 
-## 🧰 Technology Stack
+This provides logical network isolation between the two environments.
 
-| Technology          | Purpose                                       |
-| ------------------- | --------------------------------------------- |
-| **Terraform**       | Infrastructure as Code                        |
-| **Docker**          | Container runtime                             |
-| **Docker Provider** | Terraform-to-Docker infrastructure management |
-| **Nginx**           | Reverse proxy                                 |
-| **Python / Flask**  | Backend application                           |
-| **PostgreSQL**      | Relational database                           |
-| **HCL**             | Terraform configuration                       |
-| **Git**             | Version control                               |
-| **GitHub**          | Source code hosting                           |
-| **PowerShell**      | CLI and automation                            |
 
----
 
-## 📁 Project Structure
+\---
 
-```text
-terraform-docker-infrastructure/
-│
-├── backend/
-│   ├── app.py
-│   ├── Dockerfile
-│   └── requirements.txt
-│
-├── nginx/
-│   ├── Dockerfile
-│   └── nginx.conf
-│
-├── modules/
-│   ├── network/
-│   ├── backend/
-│   ├── database/
-│   └── nginx/
-│
-├── environments/
-│   ├── dev/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   │
-│   └── prod/
-│       ├── main.tf
-│       ├── variables.tf
-│       └── outputs.tf
-│
-├── .gitignore
-├── README.md
-└── versions.tf
-```
 
-> Terraform state files and local Terraform working directories should remain excluded from source control through `.gitignore`.
 
----
+\# 🧩 Terraform Modules
 
-# 🧩 Terraform Modules
 
-## Network Module
 
-Creates a dedicated Docker bridge network for each environment.
+The infrastructure is organized into reusable Terraform modules.
+
+
+
+\## Network Module
+
+
+
+Creates the Docker network for each environment.
+
+
 
 ```text
+
 Dev  → terraform-dev-network
+
 Prod → terraform-prod-network
+
 ```
 
-The module allows the environments to maintain independent network boundaries.
 
----
 
-## Backend Module
+\## Backend Module
 
-Provisions the Python / Flask backend container.
 
-The Flask application listens on port `5000` inside the Docker network.
 
-Host mappings:
+Builds and provisions the Flask backend container.
+
+
 
 ```text
+
+Container port: 5000
+
+
+
 Dev  → localhost:5001
+
 Prod → localhost:5002
+
 ```
 
----
 
-## Database Module
 
-Provisions PostgreSQL 16 using the Alpine image.
+\## Database Module
 
-PostgreSQL is accessible internally by the backend container and is not directly exposed to the host.
+
+
+Provisions PostgreSQL using:
+
+
 
 ```text
-Backend
-   │
-   ▼
-PostgreSQL
+
+postgres:16-alpine
+
 ```
 
----
 
-## Nginx Module
 
-Provisions the Nginx reverse-proxy container.
+The database is connected to the environment-specific Docker network.
 
-Host mappings:
+
+
+\## Nginx Module
+
+
+
+Builds and provisions the Nginx reverse proxy.
+
+
 
 ```text
+
 Dev  → localhost:8081
+
 Prod → localhost:8082
+
 ```
 
-Request flow:
+
+
+Nginx forwards application requests to the Flask backend over the Docker network.
+
+
+
+\---
+
+
+
+\# 🛠️ Technology Stack
+
+
+
+| Technology      | Purpose                              |
+
+| --------------- | ------------------------------------ |
+
+| Terraform       | Infrastructure as Code               |
+
+| Docker          | Containerization                     |
+
+| Docker Provider | Terraform Docker resource management |
+
+| Python          | Backend                              |
+
+| Flask           | REST API                             |
+
+| PostgreSQL      | Database                             |
+
+| Nginx           | Reverse Proxy                        |
+
+| HCL             | Terraform configuration              |
+
+| Git             | Version Control                      |
+
+| GitHub          | Source Control                       |
+
+| GitHub Actions  | CI Validation                        |
+
+| PowerShell      | CLI / Automation                     |
+
+
+
+\---
+
+
+
+\# 📁 Project Structure
+
+
 
 ```text
-Client
-  │
-  ▼
-Nginx
-  │
-  ▼
-Flask Backend
+
+terraform-docker-infrastructure/
+
+│
+
+├── .github/
+
+│   └── workflows/
+
+│       └── terraform-ci.yml
+
+│
+
+├── backend/
+
+│   ├── app.py
+
+│   ├── Dockerfile
+
+│   └── requirements.txt
+
+│
+
+├── docs/
+
+│   ├── architecture.md
+
+│   └── images/
+
+│       ├── terraform-apply-success.png
+
+│       ├── terraform-dev-plan.png
+
+│       ├── terraform-prod-plan.png
+
+│       ├── docker-containers.png
+
+│       ├── application-testing.png
+
+│       └── github-actions-ci.png
+
+│
+
+├── environments/
+
+│   ├── dev/
+
+│   │   ├── main.tf
+
+│   │   ├── output.tf
+
+│   │   ├── providers.tf
+
+│   │   ├── terraform.tfvars.example
+
+│   │   ├── variables.tf
+
+│   │   └── versions.tf
+
+│   │
+
+│   └── prod/
+
+│       ├── main.tf
+
+│       ├── output.tf
+
+│       ├── providers.tf
+
+│       ├── terraform.tfvars.example
+
+│       ├── variables.tf
+
+│       └── versions.tf
+
+│
+
+├── modules/
+
+│   ├── backend/
+
+│   ├── database/
+
+│   ├── network/
+
+│   └── nginx/
+
+│
+
+├── nginx/
+
+│   ├── Dockerfile
+
+│   └── nginx.conf
+
+│
+
+├── .gitignore
+
+├── .terraform.lock.hcl
+
+├── README.md
+
+└── terraform.tfvars.example
+
 ```
 
----
 
-# 🚀 Getting Started
 
-## Prerequisites
+\---
 
-Install the following tools:
 
-* Docker Desktop
-* Terraform
-* Git
-* PowerShell
 
-Verify the installations:
+\# 📸 Project Screenshots
+
+
+
+\## Terraform Apply
+
+
+
+Terraform successfully provisions the Docker infrastructure.
+
+
+
+!\[Terraform Apply Success](docs/images/terraform-apply-success.png)
+
+
+
+\---
+
+
+
+\## Terraform Plan — Development
+
+
+
+The Development environment was verified with Terraform plan.
+
+
+
+!\[Terraform Development Plan](docs/images/terraform-dev-plan.png)
+
+
+
+Expected result:
+
+
+
+```text
+
+No changes. Your infrastructure matches the configuration.
+
+```
+
+
+
+\---
+
+
+
+\## Terraform Plan — Production
+
+
+
+The Production environment was also verified against the Terraform configuration.
+
+
+
+!\[Terraform Production Plan](docs/images/terraform-prod-plan.png)
+
+
+
+Expected result:
+
+
+
+```text
+
+No changes. Your infrastructure matches the configuration.
+
+```
+
+
+
+\---
+
+
+
+\## Docker Containers
+
+
+
+The final deployment contains separate Dev and Prod application stacks.
+
+
+
+!\[Docker Containers](docs/images/docker-containers.png)
+
+
+
+Expected services:
+
+
+
+```text
+
+Development
+
+├── terraform-dev-nginx
+
+├── terraform-dev-backend
+
+└── terraform-dev-postgres
+
+
+
+Production
+
+├── terraform-prod-nginx
+
+├── terraform-prod-backend
+
+└── terraform-prod-postgres
+
+```
+
+
+
+\*\*Total: 6 Docker containers\*\*
+
+
+
+\---
+
+
+
+\## Application Testing
+
+
+
+Both Dev and Prod application endpoints are tested through Nginx.
+
+
+
+!\[Application Testing](docs/images/application-testing.png)
+
+
+
+```text
+
+Development → http://localhost:8081
+
+Production  → http://localhost:8082
+
+```
+
+
+
+Expected response:
+
+
+
+```json
+
+{
+
+&#x20; "message": "Terraform Docker Backend is running"
+
+}
+
+```
+
+
+
+\---
+
+
+
+\## GitHub Actions CI
+
+
+
+Terraform configuration is validated automatically through GitHub Actions.
+
+
+
+!\[GitHub Actions CI](docs/images/github-actions-ci.png)
+
+
+
+\---
+
+
+
+\# 🚀 Getting Started
+
+
+
+\## Prerequisites
+
+
+
+Install:
+
+
+
+\* Docker Desktop
+
+\* Terraform
+
+\* Git
+
+\* PowerShell
+
+
+
+Verify:
+
+
 
 ```powershell
+
 terraform version
+
 docker version
+
 git --version
+
 ```
 
----
 
-# 🔵 Development Environment
+
+Make sure Docker Desktop is running before executing Terraform commands.
+
+
+
+\---
+
+
+
+\# 🔵 Deploy Development
+
+
 
 Navigate to the Dev environment:
 
+
+
 ```powershell
-cd environments/dev
+
+cd C:\\Users\\Rafeek\\terraform-docker-infrastructure\\environments\\dev
+
 ```
+
+
 
 Initialize Terraform:
 
+
+
 ```powershell
+
 terraform init
+
 ```
 
-Validate the configuration:
+
+
+Format:
+
+
 
 ```powershell
+
+terraform fmt -recursive
+
+```
+
+
+
+Validate:
+
+
+
+```powershell
+
 terraform validate
+
 ```
 
-Create an execution plan:
+
+
+Create execution plan:
+
+
 
 ```powershell
+
 terraform plan
+
 ```
 
-Apply the infrastructure:
+
+
+Apply infrastructure:
+
+
 
 ```powershell
+
 terraform apply
+
 ```
 
----
 
-# 🟢 Production Environment
+
+\---
+
+
+
+\# 🟢 Deploy Production
+
+
 
 Navigate to the Prod environment:
 
+
+
 ```powershell
-cd environments/prod
+
+cd C:\\Users\\Rafeek\\terraform-docker-infrastructure\\environments\\prod
+
 ```
+
+
 
 Initialize Terraform:
 
+
+
 ```powershell
+
 terraform init
+
 ```
 
-Validate the configuration:
+
+
+Format:
+
+
 
 ```powershell
+
+terraform fmt -recursive
+
+```
+
+
+
+Validate:
+
+
+
+```powershell
+
 terraform validate
+
 ```
 
-Create an execution plan:
+
+
+Create execution plan:
+
+
 
 ```powershell
+
 terraform plan
+
 ```
 
-Apply the infrastructure:
+
+
+Apply:
+
+
 
 ```powershell
+
 terraform apply
+
 ```
 
----
 
-# 🧪 Verification
 
-## Check Running Containers
+\---
+
+
+
+\# 🧪 Verification
+
+
+
+\## Check Containers
+
+
 
 ```powershell
+
 docker ps
+
 ```
 
-## Check Docker Networks
+
+
+Expected:
+
+
+
+```text
+
+terraform-dev-nginx
+
+terraform-dev-backend
+
+terraform-dev-postgres
+
+
+
+terraform-prod-nginx
+
+terraform-prod-backend
+
+terraform-prod-postgres
+
+```
+
+
+
+\## Check Networks
+
+
 
 ```powershell
+
 docker network ls
+
 ```
 
-## Test Development Application
+
+
+Expected:
+
+
+
+```text
+
+terraform-dev-network
+
+terraform-prod-network
+
+```
+
+
+
+\## Test Development
+
+
 
 ```powershell
-curl.exe -i http://localhost:8081
+
+curl.exe http://localhost:8081
+
 ```
 
-## Test Production Application
 
-```powershell
-curl.exe -i http://localhost:8082
-```
 
-## Test Development Backend
+Expected:
 
-```powershell
-curl.exe -i http://localhost:5001
-```
 
-## Test Production Backend
-
-```powershell
-curl.exe -i http://localhost:5002
-```
-
-Expected backend response:
 
 ```json
+
 {
-  "message": "Terraform Docker Backend is running"
+
+&#x20; "message": "Terraform Docker Backend is running"
+
 }
+
 ```
 
----
 
-# 🔍 Terraform Validation
 
-Terraform configuration is validated using:
+\## Test Production
+
+
 
 ```powershell
+
+curl.exe http://localhost:8082
+
+```
+
+
+
+Expected:
+
+
+
+```json
+
+{
+
+&#x20; "message": "Terraform Docker Backend is running"
+
+}
+
+```
+
+
+
+\---
+
+
+
+\# 🔍 Infrastructure Validation
+
+
+
+The project uses Terraform to compare the declared configuration with the deployed infrastructure.
+
+
+
+\### Format
+
+
+
+```powershell
+
+terraform fmt -check -recursive
+
+```
+
+
+
+\### Validate
+
+
+
+```powershell
+
 terraform validate
+
 ```
 
-A successful validation returns:
 
-```text
-Success! The configuration is valid.
+
+\### Plan
+
+
+
+```powershell
+
+terraform plan
+
 ```
 
-Terraform plans can also be used to detect infrastructure drift and determine whether the deployed infrastructure matches the current Terraform configuration.
 
-When the infrastructure is already synchronized with the configuration, Terraform reports:
+
+A synchronized environment returns:
+
+
 
 ```text
+
 No changes. Your infrastructure matches the configuration.
+
 ```
 
----
 
-# 🔐 Infrastructure and Security Considerations
 
-This project demonstrates several infrastructure security principles:
+This verifies that the deployed Docker infrastructure matches the Terraform configuration.
 
-* PostgreSQL is not directly exposed to the host.
-* Dev and Prod use separate Docker networks.
-* Terraform configuration is managed as code.
-* Terraform state should not be committed to Git.
-* Sensitive values should be supplied through variables or secure secret-management mechanisms.
-* Production implementations should use a secure remote Terraform backend with appropriate access controls and encryption.
 
----
 
-# 🎯 DevOps Concepts Demonstrated
+\---
 
-This project demonstrates practical knowledge of:
 
-* Infrastructure as Code
-* Terraform
-* Terraform providers
-* Terraform modules
-* HCL
-* Environment separation
-* Dev / Prod isolation
-* Docker networking
-* Containerized application deployment
-* Nginx reverse proxy
-* Flask application deployment
-* PostgreSQL integration
-* Terraform variables
-* Terraform outputs
-* Terraform state management
-* Infrastructure validation
-* Infrastructure drift detection
-* Git-based infrastructure version control
-* PowerShell automation
 
----
+\# ⚙️ GitHub Actions CI
 
-# 📈 Future Improvements
 
-Potential extensions include:
 
-* GitHub Actions CI/CD
-* Terraform `fmt` validation
-* Automated Terraform plan checks
-* Remote Terraform state
-* State locking
-* Secret management
-* Container image versioning
-* Container health checks
-* Trivy container security scanning
-* Terraform linting
-* Prometheus and Grafana monitoring
-* Automated Dev/Prod deployment workflows
-* Azure infrastructure migration using Terraform
-* Azure Container Apps / AKS deployment
-* Azure Container Registry integration
+Workflow:
 
----
 
-# 👨‍💻 Author
 
-**Rafeek Ahamed M**
+```text
 
-**DevOps Engineer | Azure Cloud Engineer**
+.github/workflows/terraform-ci.yml
 
-GitHub: https://github.com/RafeekAhamed
+```
 
-LinkedIn: https://linkedin.com/in/rafeek-ahamed-devops
+
+
+The CI pipeline performs Terraform configuration validation for the Dev and Prod environments.
+
+
+
+\### CI Flow
+
+
+
+```text
+
+GitHub
+
+&#x20;  │
+
+&#x20;  ▼
+
+Checkout
+
+&#x20;  │
+
+&#x20;  ▼
+
+Terraform Setup
+
+&#x20;  │
+
+&#x20;  ▼
+
+terraform fmt -check
+
+&#x20;  │
+
+&#x20;  ├───────────────┐
+
+&#x20;  ▼               ▼
+
+&#x20; DEV             PROD
+
+&#x20;  │               │
+
+&#x20;  ├─ init         ├─ init
+
+&#x20;  ├─ validate     ├─ validate
+
+&#x20;  └─ plan         └─ plan
+
+```
+
+
+
+The workflow provides automated Terraform validation before changes are merged.
+
+
+
+\---
+
+
+
+\# 🔐 Security \& Configuration
+
+
+
+Sensitive configuration is kept outside committed source code.
+
+
+
+\## `.tfvars`
+
+
+
+Actual Terraform variable files are ignored through `.gitignore`.
+
+
+
+Only example configuration is committed:
+
+
+
+```text
+
+terraform.tfvars.example
+
+```
+
+
+
+\## Terraform State
+
+
+
+Terraform state files are excluded from Git.
+
+
+
+For a production cloud implementation, remote state with secure access control, encryption, and state locking would be recommended.
+
+
+
+\## Database Network Security
+
+
+
+PostgreSQL is connected to the internal Docker network and is not directly exposed through a host port.
+
+
+
+\---
+
+
+
+\# 📊 Validation Results
+
+
+
+The project has been validated through:
+
+
+
+```text
+
+✓ Terraform fmt
+
+✓ Terraform validate
+
+✓ Terraform plan
+
+✓ Terraform apply
+
+✓ Docker container verification
+
+✓ Docker network verification
+
+✓ Container DNS resolution
+
+✓ Nginx configuration validation
+
+✓ Development HTTP testing
+
+✓ Production HTTP testing
+
+✓ GitHub Actions CI
+
+```
+
+
+
+\### Current Deployment
+
+
+
+```text
+
+Development
+
+├── Nginx
+
+├── Flask Backend
+
+└── PostgreSQL
+
+
+
+Production
+
+├── Nginx
+
+├── Flask Backend
+
+└── PostgreSQL
+
+```
+
+
+
+\*\*6 Docker containers successfully provisioned and running.\*\*
+
+
+
+Terraform plan verification confirms:
+
+
+
+```text
+
+No changes. Your infrastructure matches the configuration.
+
+```
+
+
+
+\---
+
+
+
+\# 🧠 DevOps Skills Demonstrated
+
+
+
+\* Infrastructure as Code
+
+\* Terraform
+
+\* Terraform Modules
+
+\* Terraform Provider
+
+\* HCL
+
+\* Docker
+
+\* Docker Networking
+
+\* Container Provisioning
+
+\* Dev / Prod Environment Separation
+
+\* Nginx Reverse Proxy
+
+\* Flask REST API
+
+\* PostgreSQL
+
+\* Environment Variables
+
+\* Sensitive Variables
+
+\* Terraform Outputs
+
+\* Terraform State
+
+\* Infrastructure Validation
+
+\* Git
+
+\* GitHub
+
+\* GitHub Actions
+
+\* CI/CD
+
+\* PowerShell
+
+
+
+\---
+
+
+
+\# 🔮 Future Improvements
+
+
+
+Potential extensions:
+
+
+
+\* Remote Terraform state
+
+\* State locking
+
+\* Dedicated secret management
+
+\* Container image versioning
+
+\* Container health checks
+
+\* Terraform linting
+
+\* Trivy image security scanning
+
+\* Prometheus / Grafana monitoring
+
+\* Automated deployment pipelines
+
+\* Azure infrastructure provisioning with Terraform
+
+\* Azure Container Registry
+
+\* Azure Kubernetes Service (AKS)
+
+
+
+\---
+
+
+
+\# 👨‍💻 Author
+
+
+
+\## Rafeek Ahamed M
+
+
+
+\*\*DevOps Engineer | Azure Cloud Engineer\*\*
+
+
+
+\*\*GitHub:\*\*
+
+https://github.com/RafeekAhamed
+
+
+
+\*\*LinkedIn:\*\*
+
+https://linkedin.com/in/rafeek-ahamed-devops
+
+
+
+\---
+
+
+
+\# ⭐ Repository
+
+
+
+\*\*Terraform + Docker Infrastructure Automation\*\*
+
+
+
+https://github.com/RafeekAhamed/terraform-docker-infrastructure
+
+
+
+A hands-on DevOps project demonstrating practical \*\*Terraform Infrastructure as Code, Docker containerization, networking, environment management, CI validation, and application deployment\*\*.
+
+
+
