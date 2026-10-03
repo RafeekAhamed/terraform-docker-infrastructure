@@ -203,15 +203,7 @@ terraform-docker-infrastructure/
 │       ├── terraform-prod-plan.png
 │       ├── docker-containers.png
 │       ├── application-testing.png
-<<<<<<< HEAD
-<<<<<<< HEAD
-│       │── github-repository.png
-=======
-|       |── github-actions-ci.png
->>>>>>> 4b6a53e (fix: correct Terraform CI secret indentation)
-=======
 |       |── github-repository.png
->>>>>>> f5ba4df (fix: correct Terraform CI secret indentation)
 │       └── github-actions-ci.png
 │
 ├── environments/
